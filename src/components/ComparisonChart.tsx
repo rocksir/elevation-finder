@@ -51,7 +51,7 @@ export function ComparisonChart({ locations, unit }: ComparisonChartProps) {
             const isAboveSeaLevel = location.elevation! >= 0;
             
             return (
-              <div key={location.id} className="flex flex-col items-center flex-1 max-w-24">
+              <div key={location.id} className="flex flex-col items-center flex-1 max-w-24 h-full">
                 {/* Elevation label */}
                 <div 
                   className="mb-2 text-center transition-all duration-700"
