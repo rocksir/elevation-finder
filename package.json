@@ -8,7 +8,9 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "speed-insights:local": "npx @vercel/speed-insights --url=http://localhost:5000 --output=html --output=json --outputPath=reports/speed-insights",
+    "speed-insights:deploy": "npx @vercel/speed-insights --url=$SPEED_INSIGHTS_URL --output=html --output=json --outputPath=reports/speed-insights"
   },
   "dependencies": {
     "@fontsource/outfit": "^5.2.8",
