@@ -57,7 +57,7 @@ export const AdBanner = ({ slot, className }: AdBannerProps) => {
           
           <ins className="adsbygoogle"
             style={{ display: 'block' }}
-            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-client=ca-pub-4333918908225540"
             data-ad-slot="XXXXXXXXXX"
             data-ad-format="auto"
             data-full-width-responsive="true"
