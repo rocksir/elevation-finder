@@ -39,8 +39,20 @@ export function LocationSearch({ onLocationSelect }: LocationSearchProps) {
           const locations = await searchLocations(query);
           setResults(locations);
           setIsOpen(true);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Search error:', error);
+          if (error?.message === 'quota_exceeded') {
+            toast({
+              title: 'Monthly API limit reached',
+              description: 'You have reached your monthly API request limit. Try again next month or use the map to pick locations.',
+              variant: 'destructive',
+            });
+          } else {
+            toast({
+              title: 'Search failed',
+              description: 'Unable to search locations right now. Please try again later.',
+            });
+          }
         } finally {
           setIsLoading(false);
         }
@@ -82,6 +94,19 @@ export function LocationSearch({ onLocationSelect }: LocationSearchProps) {
       setIsOpen(false);
     } catch (error) {
       console.error('Failed to get elevation:', error);
+      const err: any = error;
+      if (err?.message === 'quota_exceeded') {
+        toast({
+          title: 'Monthly API limit reached',
+          description: 'You have reached your monthly API request limit. Try again next month or use the map to pick locations.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Elevation failed',
+          description: 'Unable to retrieve elevation for this location. Please try again.',
+        });
+      }
     } finally {
       setLoadingElevation(null);
     }

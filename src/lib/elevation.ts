@@ -5,28 +5,28 @@ export interface Location {
   longitude: number;
   elevation: number | null;
   country?: string;
-}
-
-export interface GeocodingResult {
-  name: string;
-  latitude: number;
-  longitude: number;
-  country?: string;
-  admin1?: string;
-}
+import quota from "../lib/quota";
 
 // Open-Meteo Geocoding API
 export async function searchLocations(query: string): Promise<GeocodingResult[]> {
   if (!query.trim()) return [];
-  
+
+  // Each search counts as 1 request against the monthly quota
+  if (!quota.canConsume(1)) {
+    throw new Error("quota_exceeded");
+  }
+
   const response = await fetch(
     `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`
   );
-  
-  if (!response.ok) throw new Error('Failed to search locations');
-  
+
+  if (!response.ok) throw new Error("Failed to search locations");
+
   const data = await response.json();
-  
+
+  // consume the quota only after a successful response
+  quota.consume(1);
+
   return (data.results || []).map((result: any) => ({
     name: result.name,
     latitude: result.latitude,
@@ -37,14 +37,22 @@ export async function searchLocations(query: string): Promise<GeocodingResult[]>
 }
 
 // Open-Meteo Elevation API (uses SRTM data, very accurate)
+// Open-Meteo Elevation API (uses SRTM data, very accurate)
 export async function getElevation(latitude: number, longitude: number): Promise<number> {
+  // Each elevation request counts as 1 request against the monthly quota
+  if (!quota.canConsume(1)) {
+    throw new Error("quota_exceeded");
+  }
+
   const response = await fetch(
     `https://api.open-meteo.com/v1/elevation?latitude=${latitude}&longitude=${longitude}`
   );
-  
-  if (!response.ok) throw new Error('Failed to get elevation');
-  
+
+  if (!response.ok) throw new Error("Failed to get elevation");
+
   const data = await response.json();
+
+  quota.consume(1);
   return data.elevation[0];
 }
 
