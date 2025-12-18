@@ -145,6 +145,14 @@ export function LocationSearch({ onLocationSelect }: LocationSearchProps) {
           })}
         </div>
       )}
+      {isOpen && !isLoading && query.length >= 2 && results.length === 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-xl shadow-elevation border border-border p-3 z-[9999] animate-fade-in-up">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
+            <p className="text-sm text-muted-foreground">If search doesn't return results, try using the map to pick a location instead.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
