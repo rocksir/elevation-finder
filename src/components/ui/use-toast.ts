@@ -1,1 +1,3 @@
-export function useToast() { return { toast: (msg: string) => console.log('toast:', msg) }; }
+import { useToast, toast } from "@/hooks/use-toast";
+
+export { useToast, toast };

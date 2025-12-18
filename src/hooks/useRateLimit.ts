@@ -1,17 +1,37 @@
-import { useRef } from "react";
+import { useState, useCallback, useRef } from 'react';
 
-export function useRateLimit(calls = 1, perMs = 1000) {
-  const lastRef = useRef<number[]>([]);
+interface RateLimitConfig {
+  maxRequests: number;
+  windowMs: number;
+}
 
-  function canCall() {
+export function useRateLimit({ maxRequests, windowMs }: RateLimitConfig) {
+  const [isLimited, setIsLimited] = useState(false);
+  const requestTimestamps = useRef<number[]>([]);
+
+  const checkRateLimit = useCallback((): boolean => {
     const now = Date.now();
-    lastRef.current = lastRef.current.filter((t) => now - t < perMs);
-    if (lastRef.current.length < calls) {
-      lastRef.current.push(now);
-      return true;
+    const windowStart = now - windowMs;
+    
+    // Remove timestamps outside the window
+    requestTimestamps.current = requestTimestamps.current.filter(
+      (timestamp) => timestamp > windowStart
+    );
+    
+    if (requestTimestamps.current.length >= maxRequests) {
+      setIsLimited(true);
+      setTimeout(() => setIsLimited(false), windowMs);
+      return false;
     }
-    return false;
-  }
+    
+    requestTimestamps.current.push(now);
+    return true;
+  }, [maxRequests, windowMs]);
 
-  return { canCall };
+  const resetLimit = useCallback(() => {
+    requestTimestamps.current = [];
+    setIsLimited(false);
+  }, []);
+
+  return { isLimited, checkRateLimit, resetLimit };
 }
